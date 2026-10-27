@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Practice Activity: The Planning Room | ACC3250 Module 2</title>
+<style>
+:root{
+  --bg:#f6f1ff;
+  --ink:#22163d;
+  --muted:#5f5578;
+  --white:#ffffff;
+  --pink:#ff4f9a;
+  --violet:#582fc1;
+  --aqua:#00a3b4;
+  --lime:#7ccf1b;
+  --plum:#741b47;
+  --good:#11804f;
+  --bad:#c8263f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);background:var(--bg);line-height:1.55;font-size:16px;position:relative;
+  background-image:
+    linear-gradient(rgba(88,47,193,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(88,47,193,.06) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.28;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.6'/%3E%3C/svg%3E");
+}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:18px 16px 40px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.grain{position:relative;overflow:hidden}
+.grain::after{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:soft-light;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+}
+.grain>*{position:relative;z-index:1}
+
+/* Hero */
+.hero{
+  border-radius:28px;padding:24px 24px 26px;color:var(--white);
+  background:
+    radial-gradient(120% 140% at 0% 0%,#ff4f9a 0,rgba(255,79,154,0) 48%),
+    radial-gradient(100% 120% at 100% 0%,#00c2cf 0,rgba(0,194,207,0) 50%),
+    radial-gradient(90% 120% at 85% 100%,#9be22d 0,rgba(155,226,45,0) 45%),
+    linear-gradient(135deg,#582fc1,#3d1f8f);
+}
+.toprow{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.brand{font-weight:800;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase}
+.course{font-weight:600;font-size:.82rem;opacity:.92}
+.chip{display:inline-flex;align-items:center;gap:6px;margin-top:18px;background:#d9ff8a;color:var(--ink);font-weight:900;font-size:.76rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:8px}
+.chip svg{width:14px;height:14px}
+.hero h1{font-family:"Trebuchet MS","Gill Sans","Segoe UI",sans-serif;font-size:clamp(1.9rem,5vw,2.9rem);line-height:1.05;margin:12px 0 8px;font-weight:900;letter-spacing:-.01em}
+.hero h1 span{background:linear-gradient(transparent 62%,rgba(255,79,154,.75) 62%);padding:0 4px}
+.hero p{margin:0;max-width:600px;font-size:1.02rem}
+
+/* Phase rail */
+.rail{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0}
+.phase{display:flex;align-items:center;gap:8px;background:var(--white);border-radius:14px;padding:9px 10px;border:2px solid transparent;box-shadow:0 2px 0 rgba(34,22,61,.08);min-width:0}
+.phase .pi{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#efe9fb;color:var(--muted)}
+.phase .pi svg{width:20px;height:20px}
+.phase .pn{min-width:0}
+.phase .pn b{display:block;font-size:.8rem;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phase .pn small{display:block;font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.phase.active{border-color:var(--c)}
+.phase.active .pi{background:var(--c);color:var(--on)}
+.phase.done .pi{background:var(--c);color:var(--on)}
+.phase.done{background:color-mix(in srgb,var(--c) 12%,#fff)}
+
+/* Layout */
+.layout{display:grid;gap:18px;align-items:start}
+@media (min-width:780px){.layout.withboard{grid-template-columns:minmax(0,1.65fr) minmax(0,1fr)}}
+
+/* Panel */
+.panel{background:var(--white);border-radius:24px;box-shadow:0 18px 40px -22px rgba(34,22,61,.45);overflow:hidden}
+.phead{padding:16px 20px;color:var(--on);background:var(--c)}
+.phead .row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.phead .lab{display:flex;align-items:center;gap:8px;font-weight:900;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
+.phead .lab svg{width:20px;height:20px}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots i{width:10px;height:10px;border-radius:50%;background:color-mix(in srgb,var(--on) 30%,transparent);display:block}
+.dots i.ok{background:var(--on)}
+.dots i.no{background:transparent;border:2px solid var(--on)}
+.dots i.now{outline:2px solid var(--on);outline-offset:2px}
+.pbody{padding:20px}
+h2{font-family:"Trebuchet MS","Gill Sans","Segoe UI",sans-serif;font-size:clamp(1.3rem,3.4vw,1.75rem);margin:0 0 10px;line-height:1.15}
+h2:focus{outline:none}
+.kicker{font-size:.74rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--plum)}
+.q{font-size:1.08rem;font-weight:700;margin:0 0 16px}
+.lead{margin:0 0 14px;font-size:1.03rem}
+
+/* Data card */
+.data{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px}
+.data div{background:color-mix(in srgb,var(--aqua) 10%,#fff);border:2px solid color-mix(in srgb,var(--aqua) 45%,#fff);border-radius:14px;padding:10px;text-align:center}
+.data b{display:block;font-size:1.15rem;font-weight:900}
+.data small{font-size:.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.datanote{font-size:.9rem;color:var(--muted);margin:-6px 0 16px}
+
+/* Options */
+.opts{display:grid;gap:10px}
+.opts.chips{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.opt{
+  font:inherit;color:var(--ink);text-align:left;cursor:pointer;width:100%;
+  display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:16px;
+  background:#faf8ff;border:2px solid #e3dcf5;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
+}
+.opt:hover:not(:disabled){transform:translateY(-2px);border-color:var(--c);box-shadow:0 8px 18px -10px var(--c)}
+.opt:focus-visible,.btn:focus-visible,.duelcard:focus-visible{outline:3px solid var(--aqua);outline-offset:3px}
+.opt:disabled,.duelcard:disabled{cursor:default}
+.radio{flex:none;width:22px;height:22px;border-radius:50%;border:2.5px solid #b9addb;margin-top:2px;display:grid;place-items:center;background:#fff}
+.radio svg{width:13px;height:13px;color:#fff}
+.otext{flex:1}
+.flag{display:inline-block;margin-left:8px;font-size:.7rem;font-weight:900;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:6px;vertical-align:middle;color:#fff}
+.opt.right,.duelcard.right{border-color:var(--good);background:#eaf8f1}
+.opt.right .radio{background:var(--good);border-color:var(--good)}
+.right .flag{background:var(--good)}
+.opt.wrong,.duelcard.wrong{border-color:var(--bad);background:#fdedf0}
+.opt.wrong .radio{background:var(--bad);border-color:var(--bad)}
+.wrong .flag{background:var(--bad)}
+.opt.fade,.duelcard.fade{opacity:.55}
+
+/* Duel */
+.duel{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}
+.duelcard{font:inherit;color:var(--ink);text-align:left;cursor:pointer;border-radius:18px;border:2px solid #e3dcf5;background:#faf8ff;padding:14px;display:flex;flex-direction:column;gap:8px;transition:transform .15s ease,border-color .15s ease}
+.duelcard:hover:not(:disabled){transform:translateY(-3px);border-color:var(--c)}
+.duelcard .flag{align-self:flex-start;margin-left:0}
+.duelcard .side{font-weight:900;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--plum)}
+.vs{align-self:center;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:.85rem;color:#fff;background:linear-gradient(135deg,var(--pink),var(--violet))}
+@media (max-width:560px){.duel{grid-template-columns:1fr}.vs{justify-self:center}}
+
+/* Feedback */
+.fb{margin-top:16px;border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.fb.ok{background:#e4f7ee;border-left:6px solid var(--good)}
+.fb.no{background:#fdebee;border-left:6px solid var(--bad)}
+.fb .ic{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:#fff}
+.fb.ok .ic{background:var(--good)}
+.fb.no .ic{background:var(--bad)}
+.fb .ic svg{width:18px;height:18px}
+.fb strong{display:block}
+.fb p{margin:2px 0 0}
+
+/* Buttons */
+.actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:900;cursor:pointer;border:0;border-radius:14px;padding:12px 20px;color:#fff;background:linear-gradient(135deg,var(--violet),var(--pink));box-shadow:0 10px 20px -10px var(--violet);display:inline-flex;align-items:center;gap:8px;transition:transform .12s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:#fff;color:var(--violet);border:2px solid var(--violet);box-shadow:none}
+.btn svg{width:18px;height:18px}
+
+/* Plan board */
+.board{background:linear-gradient(160deg,#fff 0,#fbf7ff 100%);border-radius:24px;padding:16px;box-shadow:0 18px 40px -26px rgba(34,22,61,.5);border:2px dashed #d8cdf3}
+@media (min-width:780px){.board{position:sticky;top:12px}}
+.board h3{margin:0 0 4px;font-family:"Trebuchet MS","Gill Sans","Segoe UI",sans-serif;font-size:1.1rem;display:flex;align-items:center;gap:8px}
+.board h3 svg{width:20px;height:20px;color:var(--plum)}
+.board .sub{margin:0 0 12px;font-size:.85rem;color:var(--muted)}
+.notes{display:grid;gap:12px}
+.note{position:relative;border-radius:6px 16px 16px 16px;padding:12px 12px 12px 14px;background:#f2eef9;color:var(--muted);font-size:.86rem;transition:all .3s ease}
+.note b{display:block;color:var(--ink);font-size:.85rem;margin-bottom:2px}
+.note.filled{background:color-mix(in srgb,var(--c) 16%,#fff);color:var(--ink);transform:rotate(-1deg);box-shadow:0 6px 14px -10px rgba(34,22,61,.6)}
+.note.filled:nth-child(even){transform:rotate(1deg)}
+.note .pin{position:absolute;top:-8px;right:12px;width:18px;height:18px;border-radius:50%;background:var(--c);box-shadow:inset -3px -3px 0 rgba(0,0,0,.18);display:none}
+.note.filled .pin{display:block}
+.note .sc{float:right;font-weight:900;font-size:.8rem;background:#fff;border-radius:6px;padding:1px 6px;margin-left:6px}
+
+/* Intro and results */
+.steps{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.steps li{border-radius:16px;padding:12px;background:color-mix(in srgb,var(--c) 13%,#fff);display:flex;gap:10px;align-items:center}
+.steps .si{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--c);color:var(--on)}
+.steps .si svg{width:22px;height:22px}
+.steps b{display:block;line-height:1.2;font-size:.95rem}
+.steps small{color:var(--muted);font-size:.8rem}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pills span{font-size:.82rem;font-weight:800;padding:5px 12px;border-radius:999px;background:#efe9fb;color:var(--violet)}
+.ring{width:150px;height:150px;margin:6px auto 12px;display:block}
+.center{text-align:center}
+.big{font-size:2.3rem;font-weight:900;margin:0;line-height:1}
+.memo{display:grid;gap:10px;margin-top:16px}
+.memo .m{border-radius:16px;padding:12px 14px;background:color-mix(in srgb,var(--c) 12%,#fff);border-left:6px solid var(--c)}
+.memo .m b{display:flex;justify-content:space-between;gap:10px}
+.memo .m p{margin:4px 0 0;font-size:.93rem}
+.memo .m small{display:block;margin-top:4px;color:var(--muted);font-weight:700}
+.upnext{margin-top:16px;border-radius:16px;padding:14px 16px;color:#fff;background:linear-gradient(135deg,var(--plum),var(--violet))}
+.upnext p{margin:0}
+footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:24px}
+@media (max-width:620px){
+  .rail{grid-template-columns:repeat(4,1fr);gap:6px}
+  .phase{flex-direction:column;text-align:center;padding:8px 4px;gap:4px}
+  .phase .pn small{display:none}
+  .phase .pn b{font-size:.66rem;white-space:normal}
+  .data{grid-template-columns:1fr}
+  .pbody{padding:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero grain">
+    <div class="toprow"><span class="brand">Nexford University</span><span class="course">ACC3250 Auditing and Assurance Services &middot; Module 2</span></div>
+    <span class="chip" id="chipicon">Practice Activity</span>
+    <h1>The <span>Planning Room</span></h1>
+    <p>Take a new client from the first acceptance question to an evidence plan, one decision at a time.</p>
+  </header>
+
+  <nav class="rail" id="rail" aria-label="Activity phases"></nav>
+  <div id="stage"></div>
+  <div id="live" class="sr" aria-live="polite"></div>
+  <footer>Nexford University &middot; ACC3250 Module 2 Practice Activity</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var I = {
+    door:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4.5L14 3v18"/><path d="M14 5h5v16"/><path d="M3 21h18"/><circle cx="11" cy="12.5" r="1" fill="currentColor"/></svg>',
+    radar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12l6.5-6.5"/><circle cx="15.5" cy="9" r="1.2" fill="currentColor"/></svg>',
+    ruler:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 16.5L16.5 3 21 7.5 7.5 21z"/><path d="M7 12.5l2 2M10 9.5l1.5 1.5M13 6.5l2 2M5.5 15.5l1 1"/></svg>',
+    torch:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6l-1 6h-4z"/><path d="M10 9h4v11a2 2 0 0 1-4 0z"/><path d="M5 5.5l2 1M19 5.5l-2 1"/></svg>',
+    pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6l-1 5 3 3H7l3-3z"/><path d="M12 11v10"/></svg>',
+    spark:'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7z"/></svg>',
+    ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    no:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+    go:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+    again:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M20 4v5h-5"/></svg>'
+  };
+
+  var AQ = ["Is management honest?","Are we independent?","Can we do the work well?","What does the predecessor say?"];
+  var IRF = ["Complexity","Subjectivity","Change","Uncertainty","Susceptibility to bias or fraud"];
+
+  var STAGES = [
+    {
+      name:"Accept the Client", short:"Accept", c:"#ff4f9a", on:"#ffffff", icon:"door",
+      intro:"Pellmore Juice Company, a juice maker that sells to grocery chains, has asked Wiley LLP to audit its financial statements. It would be a new client. Before anyone tests a single figure, Wiley must decide whether to accept it, and on what terms.",
+      plan:"Accept with conditions: evaluate the fee threat, agree a realistic timetable, confirm the preconditions, and keep the full terms in the engagement letter.",
+      items:[
+        {q:"Wiley asks Pellmore's bankers and lawyers about the company and its managers, reviews media reports, and runs background checks. Which acceptance question is Wiley answering?", o:AQ, a:0, chips:true,
+         e:"These steps test the client's integrity. No amount of testing makes up for dishonest management, so integrity is checked before anything else."},
+        {q:"Wiley asks whether it has staff who know the juice industry, whether it needs specialists, and whether it can finish on time without cutting quality. Which acceptance question is this?", o:AQ, a:2, chips:true,
+         e:"This is competence and resources: the firm must be able to staff the job with the right people and finish in the time available without cutting quality."},
+        {q:"The audit fee from Pellmore would be a large share of Wiley's total fee income. What does this create?",
+         o:["A self-interest threat, because Wiley may hesitate to disagree with a client it can't afford to lose","A self-review threat, because Wiley would be auditing its own work","A familiarity threat, because Wiley would know the client well","No threat, because the fee is agreed in the engagement letter"], a:0,
+         e:"A fee that is large compared with the firm's total income, or a fee left unpaid, creates a self-interest threat. Wiley must evaluate it and apply a safeguard if it isn't at an acceptable level."},
+        {q:"Pellmore wants the audit finished in four weeks. Wiley estimates it needs eight. Why is this more than a scheduling problem?",
+         o:["A compressed timetable reduces the evidence the team can gather, and the most reliable evidence, such as confirmations and count attendance, is the slowest to obtain","It isn't, because Wiley can simply add more junior staff","Deadlines are management's responsibility, not the auditor's","A short deadline is a self-review threat"], a:0,
+         e:"Pressure to accept and pressure to under-audit tend to arrive together. If a deadline is unrealistic, the engagement letter stage is the moment to say so: agree a realistic timetable or decline."},
+        {q:"Before accepting, what does ISA 210 require Wiley to confirm?",
+         o:["That the financial reporting framework is acceptable and management acknowledges its responsibilities","That management will correct every misstatement the auditor finds","That the previous year's opinion was unmodified","That the fee is paid before fieldwork begins"], a:0,
+         e:"These are the preconditions for an audit. Once they are confirmed, the agreed terms are written into the engagement letter."},
+        {q:"Pellmore's CFO asks Wiley to delete the engagement-letter sentence saying the opinion may be modified if circumstances require. What should Wiley do?",
+         o:["Keep it, because the letter sets out the expected form of the report, including that the opinion may be modified","Delete it, because Wiley expects a clean opinion anyway","Delete it, but mention the point at the closing meeting","Move it into the auditor's report instead"], a:0,
+         e:"The engagement letter settles the form of the report, including that the opinion may be modified. Almost every later dispute between an auditor and a client traces back to something both sides assumed and neither wrote down."}
+      ]
+    },
+    {
+      name:"Map the Risks", short:"Risks", c:"#582fc1", on:"#ffffff", icon:"radar",
+      intro:"Wiley accepts Pellmore with a realistic timetable. Now find where the statements are most likely to be materially wrong. Start by naming the inherent risk factor behind each fact, then apply the audit risk model.",
+      plan:"Revenue is a significant risk (complex rebates plus a revenue bonus). Untested controls mean control risk is treated as high, so detection risk must be low.",
+      items:[
+        {q:"Pellmore moved all its invoicing to a new sales system in month 9 of the year. Which inherent risk factor is this?", o:IRF, a:2, chips:true,
+         e:"Something about the business is different this year. Change is where last year's understanding stops being reliable."},
+        {q:"Grocery chains earn tiered rebates based on their total yearly volume across several product lines. Which inherent risk factor is this?", o:IRF, a:0, chips:true,
+         e:"The accounting is hard to get right. Rebates that depend on volumes across product lines make revenue complex to measure."},
+        {q:"Management decides how far to write down slow-selling flavors, and its view differs from the sales team's view. Which inherent risk factor is this?", o:IRF, a:1, chips:true,
+         e:"The figure depends on judgment, and reasonable people could reach different amounts. That is subjectivity."},
+        {q:"A customer has claimed compensation for a spoiled delivery, and the amount Pellmore will pay won't be known until next year. Which inherent risk factor is this?", o:IRF, a:3, chips:true,
+         e:"The figure can't be measured precisely because it depends on an outcome that isn't known yet. That is uncertainty."},
+        {q:"The sales team's bonus is paid only if annual revenue beats the budget. Which inherent risk factor is this?", o:IRF, a:4, chips:true,
+         e:"Someone has a reason to push revenue in one direction. This is susceptibility to misstatement due to management bias or fraud."},
+        {q:"Pellmore's revenue combines complex rebates with a sales bonus tied to revenue. How should this risk be assessed?",
+         o:["As a significant risk that needs a response designed specifically for it","As a normal risk, because each factor is small on its own","As a control risk, because it relates to the sales team","As immaterial, because rebates reduce revenue"], a:0,
+         e:"Where several inherent risk factors combine, the risk sits at the top of the spectrum and becomes a significant risk. Fraud risks are always significant, and ISA 240 (Revised) presumes fraud risks in revenue recognition."},
+        {q:"Wiley won't test Pellmore's controls this year. How should it treat control risk?",
+         o:["As high, and plan substantive work on that basis","As low, because the previous auditor gave an unmodified opinion","As moderate, as a middle position","As irrelevant, because control risk concerns only management"], a:0,
+         e:"If you don't plan to test the controls, you can't assume they work. Control risk is treated as high, and substantive procedures carry the load."},
+        {q:"Revenue cutoff is assessed as a high risk of material misstatement. What does the audit risk model require?",
+         o:["Lower detection risk, so testing becomes more extensive, more reliable, and closer to the year end","Higher detection risk, because the risk is already known","No change, except a larger sample size","More testing, to reduce Pellmore's inherent risk"], a:0,
+         e:"The auditor can't reduce the risk of material misstatement by testing; it can only assess it and set detection risk in response. Lower detection risk means changing the nature, timing, and extent of procedures."}
+      ]
+    },
+    {
+      name:"Set Materiality", short:"Materiality", c:"#00a3b4", on:"#ffffff", icon:"ruler", data:true,
+      intro:"Pellmore's draft figures are in. Profit has been stable for five years, and Pellmore's owners judge the business on it. Its bank loan includes a covenant tested on the audited profit figure.",
+      plan:"Benchmark: profit before tax. Overall materiality $150,000; performance materiality $75,000; a lower specific materiality for directors' pay; covenant errors judged by their nature.",
+      items:[
+        {q:"Which benchmark best suits Pellmore's users?", o:["Profit before tax","Revenue","Total assets","Total expenses"], a:0, chips:true,
+         e:"Profit is stable and it is what the owners watch, so profit before tax fits. Revenue or total assets suit an entity whose profit is volatile or near break-even, and total expenses suits not-for-profit and public bodies."},
+        {q:"Using about 5% of profit before tax, what is overall materiality?", o:["$15,000","$150,000","$300,000","$1,500,000"], a:1, chips:true,
+         e:"$3,000,000 × 5% = $150,000. For comparison, 0.5% to 1% of revenue would give $300,000 to $600,000, which is why the benchmark choice changes how much testing the whole audit needs."},
+        {q:"Pellmore is a new client, and Wiley hasn't tested its controls. Which performance materiality fits best?",
+         o:["$75,000 (50% of overall materiality)","$112,500 (75% of overall materiality)","$150,000 (equal to overall materiality)","$200,000 (above overall materiality)"], a:0,
+         e:"Performance materiality is often set at around 50% to 75% of overall materiality, and lower when the risk of undetected misstatements is higher. A new client and untested controls point to the lower end."},
+        {q:"Why does Wiley set performance materiality below overall materiality?",
+         o:["To plan the extent of testing so that small misstatements can't quietly add up to a material one","To decide which misstatements management must correct","To replace overall materiality at the end of the audit","To set the audit fee"], a:0,
+         e:"Performance materiality leaves room for misstatements the team doesn't find and for small ones that add up. It is used to plan how much testing to do."},
+        {q:"A $60,000 error in profit would make Pellmore's loan covenant look met when it is actually breached. Overall materiality is $150,000. Is the error material?",
+         o:["Yes, by its nature, because it changes whether the covenant is met","No, because it is below overall materiality","Only if it is combined with other errors","Only if management agrees to correct it"], a:0,
+         e:"Some misstatements matter whatever their size. When a lender tests a covenant on audited figures, a misstatement in the covenant's inputs can be material far below overall materiality."},
+        {q:"Users expect the payments to Pellmore's directors to be reported precisely. What can Wiley set for this item?",
+         o:["A specific materiality lower than overall materiality","A higher materiality, because the amounts are small","No materiality at all","The clearly trivial threshold"], a:0,
+         e:"Specific materiality is a lower threshold for items users expect to be more precise, such as related-party transactions or directors' pay."},
+        {q:"Late in the audit, Pellmore's final profit turns out far below the figure used at planning. What does ISA 320 require?",
+         o:["Revise materiality and reconsider the planned work","Keep the planning figure, because materiality is set once","Raise materiality to reduce the remaining testing","Let management choose a new benchmark"], a:0,
+         e:"Materiality isn't set once and filed. If the auditor learns something that would have produced a different figure, it is revised and the planned work is reconsidered."}
+      ]
+    },
+    {
+      name:"Gather the Evidence", short:"Evidence", c:"#7ccf1b", on:"#22163d", icon:"torch",
+      intro:"The plan names the risks and the thresholds. Now choose evidence that actually answers them. It opens with four evidence duels: pick the more reliable source each time.",
+      plan:"Prefer external, direct, original, and control-tested evidence; trace from source documents for completeness; build each assertion from a combination of procedures.",
+      items:[
+        {duel:true, q:"Which evidence is more reliable?", o:["A confirmation of Pellmore's bank balance, sent and received directly by Wiley","A copy of the bank statement provided by Pellmore's finance team"], a:0,
+         e:"Evidence from an independent source outside the entity, obtained directly by the auditor, is more reliable than the client's own records."},
+        {duel:true, q:"Which evidence is more reliable?", o:["The warehouse manager's account of how the year-end count went","Wiley's own observation of the year-end count"], a:1,
+         e:"Evidence the auditor obtains directly is more reliable than evidence obtained indirectly or through someone else's account."},
+        {duel:true, q:"Which evidence is more reliable?", o:["Sales records produced under controls Wiley has tested and found working","Sales records produced under controls nobody has tested"], a:0,
+         e:"The client's own records are more reliable when the controls around them have been tested and work."},
+        {duel:true, q:"Which evidence is more reliable?", o:["A scanned copy of a supplier contract, emailed by the sales team","The original signed supplier contract"], a:1,
+         e:"Documents are more reliable than oral explanations, and originals are more reliable than copies or scans."},
+        {q:"Wiley wants to find sales that Pellmore never recorded. Which procedure fits?",
+         o:["Start from dispatch notes and trace forward into the sales ledger","Start from the sales ledger and vouch back to dispatch notes","Recalculate the totals in the sales ledger","Ask the sales director whether any sales are missing"], a:0,
+         e:"To test completeness, start outside the records and trace in. Starting in the ledger tests occurrence, and it can never find what was never recorded."},
+        {q:"A junior gathers 400 pages of schedules prepared by Pellmore's finance team. Why might this still fall short of sufficient appropriate evidence?",
+         o:["Quantity never makes up for poor quality: the evidence must also be relevant and reliable","Because 400 pages is too few for any audit","Because schedules can support only the valuation assertion","Because all evidence must come from outside the entity"], a:0,
+         e:"Sufficiency is quantity; appropriateness is quality, made up of relevance and reliability. Under deadline pressure, teams drift from appropriate evidence toward merely plentiful evidence."},
+        {q:"Which of these is an expectation suitable for a substantive analytical procedure?",
+         o:["Revenue built independently from shipped volumes and the price list","Revenue rose 12% this year and 11% last year","Revenue looks reasonable to the finance director","Revenue agrees with the general ledger"], a:0,
+         e:"An expectation is built independently, from data such as shipped volumes or price lists. A year-on-year comparison isn't an expectation, so a difference from it means little (ISA 520)."},
+        {q:"Wiley confirms Pellmore's receivables and also reviews the aging. Why use both?",
+         o:["Each covers a gap in the other: the confirmation shows the customer exists, and the aging speaks to valuation but relies on the client's own dates","Using two procedures always halves the sample size","The standards require exactly two procedures for every balance","The aging makes confirmations unnecessary"], a:0,
+         e:"No single procedure carries an assertion on its own. Evidence is built in combination, and the working papers show the combination."}
+      ]
+    }
+  ];
+
+  var rail = document.getElementById("rail");
+  var root = document.getElementById("stage");
+  var live = document.getElementById("live");
+  var S;
+
+  function shuffle(n){ var a = []; for (var x = 0; x < n; x++) a.push(x); for (var y = n - 1; y > 0; y--){ var j = Math.floor(Math.random()*(y+1)); var t = a[y]; a[y] = a[j]; a[j] = t; } return a; }
+  function reset(){
+    S = {screen:"intro", s:0, i:0,
+      r:STAGES.map(function(st){ return st.items.map(function(){ return null; }); }),
+      ord:STAGES.map(function(st){ return st.items.map(function(it){ return (it.chips || it.duel) ? it.o.map(function(_, k){ return k; }) : shuffle(it.o.length); }); })
+    };
+  }
+  function score(si){ return S.r[si].filter(function(x){ return x && x.ok; }).length; }
+  function done(si){ return S.r[si].every(function(x){ return x !== null; }); }
+  function vars(st){ return "--c:"+st.c+";--on:"+st.on; }
+
+  function drawRail(){
+    rail.innerHTML = STAGES.map(function(st, si){
+      var cls = "phase";
+      var status = "not started";
+      if (done(si)){ cls += " done"; status = "complete"; }
+      else if (S.screen !== "intro" && S.screen !== "end" && si === S.s){ cls += " active"; status = "in progress"; }
+      return '<div class="'+cls+'" style="'+vars(st)+'"><span class="pi">'+(done(si) ? I.ok : I[st.icon])+'</span><span class="pn"><small>Phase '+(si+1)+'</small><b>'+st.short+'</b></span><span class="sr">, '+status+'</span></div>';
+    }).join("");
+  }
+
+  function board(){
+    var notes = STAGES.map(function(st, si){
+      var filled = done(si);
+      return '<div class="note'+(filled ? " filled" : "")+'" style="'+vars(st)+'"><span class="pin" aria-hidden="true"></span>'+
+        (filled ? '<span class="sc">'+score(si)+'/'+st.items.length+'</span>' : '')+
+        '<b>'+(si+1)+'. '+st.name+'</b>'+(filled ? st.plan : 'Pinned when this phase is complete.')+'</div>';
+    }).join("");
+    return '<aside class="board" aria-label="Engagement plan board"><h3>'+I.pin+'Engagement Plan</h3><p class="sub">Pellmore Juice Company, first-year audit</p><div class="notes">'+notes+'</div></aside>';
+  }
+
+  function head(st, label, si){
+    var dots = "";
+    if (si !== undefined){
+      dots = '<span class="dots" aria-hidden="true">'+st.items.map(function(it, k){
+        var x = S.r[si][k], c = x ? (x.ok ? "ok" : "no") : "";
+        if (k === S.i && S.screen === "item") c += " now";
+        return '<i class="'+c+'"></i>';
+      }).join("")+'</span>';
+    }
+    return '<div class="phead grain"><div class="row"><span class="lab">'+I[st.icon]+label+'</span>'+dots+'</div></div>';
+  }
+
+  function dataBlock(){
+    return '<div class="data"><div><small>Revenue</small><b>$60 million</b></div><div><small>Total assets</small><b>$30 million</b></div><div><small>Profit before tax</small><b>$3 million</b></div></div>'+
+      '<p class="datanote">Draft figures. Profit stable for five years; loan covenant tested on audited profit.</p>';
+  }
+
+  function focusH(){ var h = root.querySelector("h2"); if (h){ h.setAttribute("tabindex","-1"); h.focus(); } }
+
+  function intro(){
+    var steps = STAGES.map(function(st, si){
+      return '<li style="'+vars(st)+'"><span class="si">'+I[st.icon]+'</span><span><b>'+(si+1)+'. '+st.name+'</b><small>'+st.items.length+' decisions</small></span></li>';
+    }).join("");
+    root.innerHTML = '<div class="layout"><section class="panel" style="'+vars(STAGES[0])+'">'+
+      head({icon:"spark"}, "Your assignment at Wiley LLP")+
+      '<div class="pbody"><span class="kicker">New client file</span><h2>Plan Pellmore\'s audit</h2>'+
+      '<p class="lead">You are an audit senior at Wiley LLP. A prospective client, Pellmore Juice Company, wants an audit, and your engagement partner wants a plan before the firm commits. You will decide whether to accept, map where the risks sit, set materiality, and choose evidence that answers each risk.</p>'+
+      '<p class="lead">Each decision allows one attempt. Your answer is recorded, you see why the best answer is right, and you move on. Every phase you finish is pinned to your Engagement Plan board.</p>'+
+      '<ul class="steps">'+steps+'</ul>'+
+      '<div class="pills"><span>About 20 minutes</span><span>29 decisions</span><span>One attempt each</span></div>'+
+      '<div class="actions"><button type="button" class="btn" id="start">Enter the planning room '+I.go+'</button></div></div></section></div>';
+    document.getElementById("start").addEventListener("click", function(){ S.screen = "phase"; S.s = 0; render(true); });
+  }
+
+  function phaseIntro(){
+    var st = STAGES[S.s];
+    root.innerHTML = '<div class="layout withboard"><section class="panel" style="'+vars(st)+'">'+head(st, "Phase "+(S.s+1)+" of "+STAGES.length)+
+      '<div class="pbody"><span class="kicker">'+st.items.length+' decisions</span><h2>'+st.name+'</h2>'+(st.data ? dataBlock() : '')+'<p class="lead">'+st.intro+'</p>'+
+      '<div class="actions"><button type="button" class="btn" id="go">Start phase '+(S.s+1)+' '+I.go+'</button></div></div></section>'+board()+'</div>';
+    document.getElementById("go").addEventListener("click", function(){ S.screen = "item"; S.i = 0; render(true); });
+  }
+
+  function item(){
+    var st = STAGES[S.s], it = st.items[S.i], res = S.r[S.s][S.i];
+    var body;
+    if (it.duel){
+      body = '<div class="duel" role="group" aria-label="Choose one">'+it.o.map(function(t, k){
+        var cls = "duelcard", flag = "";
+        if (res){
+          if (k === it.a){ cls += " right"; flag = '<span class="flag">'+(res.pick === k ? "Your answer" : "More reliable")+'</span>'; }
+          else if (k === res.pick){ cls += " wrong"; flag = '<span class="flag">Your answer</span>'; }
+          else cls += " fade";
+        }
+        return (k === 1 ? '<span class="vs" aria-hidden="true">VS</span>' : '')+
+          '<button type="button" class="'+cls+'" data-k="'+k+'"'+(res ? " disabled" : "")+'><span class="side">Evidence '+(k === 0 ? "A" : "B")+'</span><span>'+t+'</span>'+flag+'</button>';
+      }).join("")+'</div>';
+    } else {
+      body = '<div class="opts'+(it.chips ? " chips" : "")+'" role="group" aria-label="Answer options">'+S.ord[S.s][S.i].map(function(k){
+        var t = it.o[k];
+        var cls = "opt", flag = "", mark = "";
+        if (res){
+          if (k === it.a){ cls += " right"; mark = I.ok; flag = '<span class="flag">'+(res.pick === k ? "Your answer" : "Best answer")+'</span>'; }
+          else if (k === res.pick){ cls += " wrong"; mark = I.no; flag = '<span class="flag">Your answer</span>'; }
+          else cls += " fade";
+        }
+        return '<button type="button" class="'+cls+'" data-k="'+k+'"'+(res ? " disabled" : "")+'><span class="radio" aria-hidden="true">'+mark+'</span><span class="otext">'+t+flag+'</span></button>';
+      }).join("")+'</div>';
+    }
+    var fb = "";
+    if (res){
+      var last = S.i === st.items.length - 1;
+      fb = '<div class="fb '+(res.ok ? "ok" : "no")+'"><span class="ic">'+(res.ok ? I.ok : I.no)+'</span><div><strong>'+(res.ok ? "Correct" : "Not quite. Recorded as incorrect.")+'</strong><p>'+it.e+'</p></div></div>'+
+        '<div class="actions"><button type="button" class="btn" id="next">'+(last ? "Pin this phase" : "Next decision")+' '+I.go+'</button></div>';
+    }
+    root.innerHTML = '<div class="layout withboard"><section class="panel" style="'+vars(st)+'">'+head(st, st.name, S.s)+
+      '<div class="pbody"><span class="kicker">Decision '+(S.i+1)+' of '+st.items.length+'</span><h2 class="sr">Decision '+(S.i+1)+'</h2>'+
+      (st.data ? dataBlock() : '')+'<p class="q">'+it.q+'</p>'+body+fb+'</div></section>'+board()+'</div>';
+    if (!res){
+      Array.prototype.forEach.call(root.querySelectorAll("[data-k]"), function(b){
+        b.addEventListener("click", function(){ choose(parseInt(b.getAttribute("data-k"),10)); });
+      });
+    } else {
+      document.getElementById("next").addEventListener("click", function(){
+        if (S.i < st.items.length - 1){ S.i++; } else { S.screen = "pinned"; }
+        render(true);
+      });
+    }
+  }
+
+  function choose(k){
+    var it = STAGES[S.s].items[S.i];
+    if (S.r[S.s][S.i]) return;
+    var ok = k === it.a;
+    S.r[S.s][S.i] = {pick:k, ok:ok};
+    render(false);
+    live.textContent = (ok ? "Correct. " : "Not quite. Recorded as incorrect. ") + it.e;
+    var n = document.getElementById("next"); if (n) n.focus();
+  }
+
+  function pinned(){
+    var st = STAGES[S.s], sc = score(S.s), tot = st.items.length, last = S.s === STAGES.length - 1;
+    root.innerHTML = '<div class="layout withboard"><section class="panel" style="'+vars(st)+'">'+head(st, "Phase "+(S.s+1)+" pinned", S.s)+
+      '<div class="pbody center">'+ringSvg(sc, tot, st.c)+'<h2>'+st.name+'</h2><p class="big">'+sc+' / '+tot+'</p>'+
+      '<p class="lead">'+(sc === tot ? "Every decision in this phase was sound." : "Your missed decisions are recorded. The plan note on the board shows the sound position.")+'</p>'+
+      '<div class="actions" style="justify-content:center"><button type="button" class="btn" id="cont">'+(last ? "Review the full plan" : "Go to phase "+(S.s+2))+' '+I.go+'</button></div></div></section>'+board()+'</div>';
+    live.textContent = "Phase " + (S.s+1) + " pinned to the plan. " + sc + " of " + tot + " correct.";
+    document.getElementById("cont").addEventListener("click", function(){
+      if (last){ S.screen = "end"; } else { S.s++; S.i = 0; S.screen = "phase"; }
+      render(true);
+    });
+  }
+
+  function ringSvg(sc, tot, color){
+    var r = 60, c = 2*Math.PI*r, f = tot ? sc/tot : 0;
+    return '<svg class="ring" viewBox="0 0 150 150" aria-hidden="true"><circle cx="75" cy="75" r="'+r+'" fill="none" stroke="#efe9fb" stroke-width="16"/>'+
+      '<circle cx="75" cy="75" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="16" stroke-linecap="round" stroke-dasharray="'+(c*f).toFixed(1)+' '+c.toFixed(1)+'" transform="rotate(-90 75 75)"/>'+
+      '<text x="75" y="84" text-anchor="middle" font-size="26" font-weight="900" fill="#22163d">'+Math.round(f*100)+'%</text></svg>';
+  }
+
+  function end(){
+    var tot = 0, max = 0;
+    var memo = STAGES.map(function(st, si){
+      var sc = score(si), n = st.items.length; tot += sc; max += n;
+      return '<div class="m" style="'+vars(st)+'"><b><span>'+(si+1)+'. '+st.name+'</span><span>'+sc+' / '+n+'</span></b><p>'+st.plan+'</p>'+
+        (sc < n ? '<small>Review: Section '+(si === 0 ? "2: Before the Engagement Begins" : si === 3 ? "4: Gathering Audit Evidence" : "3: Planning the Audit")+'</small>' : '')+'</div>';
+    }).join("");
+    root.innerHTML = '<div class="layout"><section class="panel" style="--c:#741b47;--on:#ffffff">'+head({icon:"pin"}, "Engagement plan complete")+
+      '<div class="pbody"><div class="center">'+ringSvg(tot, max, "#741b47")+'<span class="kicker">Your results</span><h2>Pellmore\'s plan is ready for the partner</h2><p class="big">'+tot+' / '+max+'</p></div>'+
+      '<div class="memo">'+memo+'</div>'+
+      '<div class="upnext"><p><strong>Up next: Assignment 2.</strong> You will write the Engagement Planning Memo for Kiboko Solar Distributors: acceptance and independence, the highest risks at assertion level, materiality with the derivation shown, and the procedures for the top risk, each with your reasons.</p></div>'+
+      '<div class="actions"><button type="button" class="btn ghost" id="again">'+I.again+' Start again</button></div></div></section></div>';
+    live.textContent = "Activity complete. " + tot + " of " + max + " correct.";
+    document.getElementById("again").addEventListener("click", function(){ reset(); render(true); });
+  }
+
+  function render(move){
+    drawRail();
+    if (S.screen === "intro") intro();
+    else if (S.screen === "phase") phaseIntro();
+    else if (S.screen === "item") item();
+    else if (S.screen === "pinned") pinned();
+    else end();
+    if (move){
+      focusH();
+      if (S.screen !== "intro" && rail.scrollIntoView) rail.scrollIntoView({behavior:"smooth", block:"start"});
+    }
+  }
+
+  document.getElementById("chipicon").insertAdjacentHTML("afterbegin", I.spark);
+  reset();
+  render(false);
+})();
+</script>
+</body>
+</html>
